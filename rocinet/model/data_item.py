@@ -1,40 +1,23 @@
 from datetime import datetime
 from json import loads
-from typing import Dict, Optional
+from typing import Dict, Optional, Callable
+
+from .base_object import BaseObject
 
 
-class DataItem:
-    def __init__(self, data: Dict[str, any]):
-        self._id = data['id']
-        self._active = data['active']
-        self._valid = data['valid']
-        self._create_time = datetime.fromisoformat(data['createTime'])
+class DataItem(BaseObject):
+    def __init__(self, data: Dict[str, any], content_loader: Callable[[Optional[str]], any] = None):
+        super().__init__(data)
         self._key = data['key']
         self._sync_id = data['syncId']
         self._search_value = data['searchValue']
         self._hash = data['hash']
-        self._content = loads(data['content']) if data['content'] else None
+        self._content = content_loader(data['content'])
         self._source_update_time = datetime.fromisoformat(data['sourceUpdateTime']) if data['sourceUpdateTime'] else None
         self._content_update_time = datetime.fromisoformat(data['contentUpdateTime'])
         self._dataset_id = data['dataset']
         self._execution_id = data['execution']
         self._depend_on_id = data['dependOn']
-
-    @property
-    def id(self) -> int:
-        return self._id
-
-    @property
-    def active(self) -> bool:
-        return self._active
-
-    @property
-    def valid(self) -> bool:
-        return self._valid
-
-    @property
-    def create_time(self) -> datetime:
-        return self._create_time
 
     @property
     def key(self) -> str:
