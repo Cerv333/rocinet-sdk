@@ -54,6 +54,15 @@ class Rocinet:
         else:
             return dataset
 
+    def get_data_item(self, data_item_id: int) -> DataItem:
+        url = 'https://api.rocinet.com/data_items/{}'.format(data_item_id)
+        response = requests.get(url, headers=self._get_headers())
+        response.raise_for_status()
+        data = response.json()
+        dataset = self.get_dataset(data['dataset'])
+        loader = self._get_content_loader(dataset)
+        return DataItem(data, loader)
+
     def _load_dataset(self, unique: Union[str, int]) -> Dataset:
         url = 'https://api.rocinet.com/datasets/{}'.format(unique)
         response = requests.get(url, headers=self._get_headers())
